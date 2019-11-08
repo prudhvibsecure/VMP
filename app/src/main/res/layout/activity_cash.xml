@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Cash">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:theme="@style/Theme.MyFancyTheme"
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:minHeight="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="VMP"
+                android:textSize="30sp"
+                android:textColor="@color/colorPrimaryDark"/>
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_marginTop="10dp"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CASH"
+            android:textColor="@color/colorPrimaryDark"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:id="@+id/save"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="SAVE"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:background="@drawable/rectangle"
+            android:padding="10dp"
+            android:layout_alignParentEnd="true"/>
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:paddingBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".65"
+                    android:text="Milk"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/colorPrimaryDark"/>
+
+                <EditText
+                    android:id="@+id/milk"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:gravity="center"
+                    android:enabled="false"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="@color/colorPrimaryDark"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".65"
+                    android:text="Curd"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/colorPrimaryDark"/>
+
+                <EditText
+                    android:id="@+id/curd"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:gravity="center"
+                    android:enabled="false"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="@color/colorPrimaryDark"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".65"
+                    android:text="Inv Amt"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/colorPrimaryDark"/>
+
+                <EditText
+                    android:id="@+id/invamt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:gravity="center"
+                    android:enabled="false"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="@color/colorPrimaryDark"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".65"
+                    android:text="Spot Com"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/colorPrimaryDark"/>
+
+                <EditText
+                    android:id="@+id/spotcom"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:gravity="center"
+                    android:enabled="false"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="@color/colorPrimaryDark"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".65"
+                    android:text="Monthly Com"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/colorPrimaryDark"/>
+
+                <EditText
+                    android:id="@+id/monthlycom"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:gravity="center"
+                    android:enabled="false"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="@color/colorPrimaryDark"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".65"
+                    android:text="Net Amount"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/colorPrimaryDark"/>
+
+                <EditText
+                    android:id="@+id/netamt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:gravity="center"
+                    android:enabled="false"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="@color/colorPrimaryDark"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".65"
+                    android:text="Old Due"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/colorPrimaryDark"/>
+
+                <EditText
+                    android:id="@+id/olddue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:gravity="center"
+                    android:enabled="false"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="@color/colorPrimaryDark"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".65"
+                    android:text="Payable"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/colorPrimaryDark"/>
+
+                <EditText
+                    android:id="@+id/payable"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:gravity="center"
+                    android:enabled="false"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="@color/colorPrimaryDark"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:layout_marginTop="10dp"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".65"
+                    android:text="Leaks"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/colorPrimaryDark"/>
+
+                <EditText
+                    android:id="@+id/leaks"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight=".30"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:inputType="number"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/rectangle"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:layout_marginTop="10dp"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".65"
+                    android:text="Paid"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/colorPrimaryDark"/>
+
+                <EditText
+                    android:id="@+id/paid"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight=".30"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:singleLine="true"
+                    android:digits=".1234567890"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/rectangle"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".65"
+                    android:text="Today Due"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/colorPrimaryDark"/>
+
+                <EditText
+                    android:id="@+id/todaydue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:gravity="center"
+                    android:focusable="false"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="@color/colorPrimaryDark"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".65"
+                    android:text="Total Due"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/colorPrimaryDark"/>
+
+                <EditText
+                    android:id="@+id/totaldue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:gravity="center"
+                    android:focusable="false"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="@color/colorPrimaryDark"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
