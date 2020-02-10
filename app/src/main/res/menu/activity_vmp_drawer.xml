@@ -29,10 +29,17 @@
             />
 
         <item
+            android:id="@+id/start"
+            android:title="Start"/>
+
+        <item
+            android:id="@+id/stop"
+            android:title="Stop"/>
+
+        <item
             android:id="@+id/logout"
             android:title="Logout"
             android:icon="@drawable/signout"
-
             />
 
     </group>

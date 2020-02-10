@@ -1,6 +1,7 @@
 package com.bsecure.vmp;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
@@ -8,6 +9,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 
 import com.bsecure.vmp.Utils.GPSTracker;
 import com.bsecure.vmp.adapters.CustomersListAdapter;
+import com.bsecure.vmp.commons.AppPreferences;
 import com.bsecure.vmp.fragments.LocationDialogue;
 import com.bsecure.vmp.fragments.MapDialogue;
 import com.bsecure.vmp.interfaces.ClickListener;
@@ -31,8 +34,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class
-Customers extends AppCompatActivity implements RequestHandler, ClickListener {
+public class Customers extends AppCompatActivity implements RequestHandler, ClickListener {
 
     private RecyclerView list;
 
@@ -40,26 +42,16 @@ Customers extends AppCompatActivity implements RequestHandler, ClickListener {
 
     private CustomersListAdapter adapter;
 
-    private String route_no, oaid, session, type, oad, rname, customer_name;
+    private String route_no, oaid, session, type, oad, rname, customer_name, head;
 
     private ProgressBar progress;
+
+    int position = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customers);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        toolbar.setTitle("Customers");//Organization Head
-
-        toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimaryDark));
-
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-
-        actionBar.setDisplayHomeAsUpEnabled(true);
 
         Intent in = getIntent();
 
@@ -75,9 +67,23 @@ Customers extends AppCompatActivity implements RequestHandler, ClickListener {
 
         rname = in.getStringExtra("rname");
 
+        head = in.getStringExtra("head");
+
         list = findViewById(R.id.list);
 
         progress = findViewById(R.id.progress);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        toolbar.setTitle(head);//Organization Head
+
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimaryDark));
+
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         getCustomers(route_no.trim());
 
@@ -215,6 +221,68 @@ Customers extends AppCompatActivity implements RequestHandler, ClickListener {
 
                     break;
 
+                case 1000:
+
+                    JSONObject result3 = new JSONObject(response.toString());
+
+                    if(result3.optString("statuscode").equalsIgnoreCase("200")) {
+
+                        Intent in = new Intent(Customers.this, Cash.class);
+
+                        in.putExtra("oaid", oaid);
+
+                        in.putExtra("cust_id", customers.get(position).getId());
+
+                        in.putExtra("oad", oad);
+
+                        in.putExtra("session", session);
+
+                        in.putExtra("rname", rname);
+
+                        in.putExtra("r_no", route_no);
+
+                        in.putExtra("head", customer_name);
+
+                        startActivity(in);
+
+                    }
+                    else
+                    {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(
+                                Customers.this);
+                        builder.setTitle("Alert");
+                        builder.setMessage(result3.optString("statusdescription"));
+                        builder.setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,
+                                                        int which) {
+
+                                        Intent in = new Intent(Customers.this, Customers.class);
+                                        in.putExtra("rno", route_no);
+
+                                        in.putExtra("oaid", oaid);
+
+                                        in.putExtra("session", session);
+
+                                        in.putExtra("oad", oad);
+
+                                        in.putExtra("type", type);
+
+                                        in.putExtra("rname", rname);
+
+                                        in.putExtra("head", head);
+                                        startActivity(in);
+                                        Customers.this.finish();
+                                    }
+                                });
+                        builder.show();
+
+                        // Toast.makeText(this, result3.optString("statusdescription"), Toast.LENGTH_SHORT).show();
+                    }
+
+                    break;
+
                 default:
 
                     break;
@@ -234,7 +302,9 @@ Customers extends AppCompatActivity implements RequestHandler, ClickListener {
 
 
     @Override
-    public void onClick(final int position, View view) {
+    public void onClick(final int pos, View view) {
+
+        position = pos;
 
         customer_name = customers.get(position).getName();
 
@@ -289,7 +359,7 @@ Customers extends AppCompatActivity implements RequestHandler, ClickListener {
         }
         else {
 
-            if (type.equals("c")) {
+            if (type.equals("indent")) {
 
                 Intent in = new Intent(Customers.this, Products.class);
 
@@ -307,25 +377,16 @@ Customers extends AppCompatActivity implements RequestHandler, ClickListener {
 
                 in.putExtra("r_no", route_no);
 
+                in.putExtra("head", customer_name);
+
                 startActivity(in);
 
                 return;
             }
 
-            if (type.equals("i")) {
-                Intent in = new Intent(Customers.this, Cash.class);
+            if (type.equals("cash")) {
 
-                in.putExtra("oaid", oaid);
-
-                in.putExtra("cust_id", customers.get(position).getId());
-
-                in.putExtra("oad", oad);
-
-                in.putExtra("session", session);
-
-                in.putExtra("rname", rname);
-
-                startActivity(in);
+                getCollection(oaid, customers.get(position).getId());
             }
 
         }
@@ -349,6 +410,32 @@ Customers extends AppCompatActivity implements RequestHandler, ClickListener {
 
     @Override
     public void onLongClick(int position, View view) {
+
+    }
+
+    private void getCollection(String oaid, String cust_id) {
+
+        try {
+
+            JSONObject object=new JSONObject();
+
+            object.put("order_allocation_id", oaid);
+
+            object.put("customer_id", cust_id);
+
+            object.put("order_allocation_date", oad);
+
+            object.put("session", session);
+
+            object.put("employee_id", AppPreferences.getInstance(this).getFromStore("eid"));
+
+            new MethodResquest(this,  this, Constants.get_indent_collection, object.toString(),1000);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
 
     }
 }

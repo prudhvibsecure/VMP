@@ -27,191 +27,191 @@ import org.json.JSONObject;
 
 public class RouteMapDialogue extends DialogFragment implements RequestHandler {
 
-    private String TAG = RouteMapDialogue.class.getSimpleName();
+  private String TAG = RouteMapDialogue.class.getSimpleName();
 
-    private ImageView close;
+  private ImageView close;
 
-    private double lati;
+  private double lati;
 
-    private double longi;
+  private double longi;
 
-    private String customer_name, route_no;
+  private String customer_name, route_no;
 
-    private GoogleMap googleMap;
+  private GoogleMap googleMap;
 
-    private MapView map;
+  private MapView map;
 
-    public static RouteMapDialogue newInstance() {
-        RouteMapDialogue f = new RouteMapDialogue();
-        return f;
+  public static RouteMapDialogue newInstance() {
+    RouteMapDialogue f = new RouteMapDialogue();
+    return f;
+  }
+
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                           Bundle savedInstanceState) {
+    View v = inflater.inflate(R.layout.map_fragment, container, false);
+
+    close = v.findViewById(R.id.close);
+
+    route_no = getArguments().getString("route_no");
+
+    map = v.findViewById(R.id.map);
+
+    map.onCreate(savedInstanceState);
+
+    map.onResume();
+
+    try {
+      MapsInitializer.initialize(getActivity().getApplicationContext());
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.map_fragment, container, false);
+    map.getMapAsync(new OnMapReadyCallback() {
+      @Override
+      public void onMapReady(GoogleMap Map) {
 
-        close = v.findViewById(R.id.close);
+        googleMap = Map;
 
-        route_no = getArguments().getString("route_no");
+        // For showing a move to my location button
+        //googleMap.setMyLocationEnabled(true);
 
-        map = v.findViewById(R.id.map);
-
-        map.onCreate(savedInstanceState);
-
-        map.onResume();
-
-        try {
-            MapsInitializer.initialize(getActivity().getApplicationContext());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        map.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap Map) {
-
-                googleMap = Map;
-
-                // For showing a move to my location button
-                //googleMap.setMyLocationEnabled(true);
-
-                getRouteMap(route_no);
-                // For dropping a marker at a point on the Map
+        getRouteMap(route_no);
+        // For dropping a marker at a point on the Map
                /* LatLng sydney = new LatLng(lati, longi);
                 googleMap.addMarker(new MarkerOptions().position(sydney).title(customer_name).snippet("Customer"));*/
 
-                // For zooming automatically to the location of the marker
+        // For zooming automatically to the location of the marker
                /* CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(20).build();
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
+      }
+    });
+
+    close.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        getDialog().dismiss();
+      }
+    });
+
+    return v;
+  }
+
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Light_NoTitleBar_Fullscreen);
+  }
+
+
+  @Override
+  public void onPause() {
+    super.onPause();
+    map.onPause();
+    //images.clear();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    map.onResume();
+    //images = simages;
+  }
+
+  @Override
+  public void onDetach() {
+    super.onDetach();
+    //images.clear();
+  }
+
+  @Override
+  public void requestStarted() {
+
+  }
+
+  @Override
+  public void requestCompleted(JSONObject response, int requestType) {
+
+    try {
+
+      switch (requestType) {
+
+        case 100:
+
+          JSONObject result = new JSONObject(response.toString());
+
+          if(result.optString("statuscode").equalsIgnoreCase("200"))
+          {
+
+            JSONArray array = result.getJSONArray("customer_route_details");
+            if(array.length() != 0)
+            {
+              for(int i=0;i<array.length();i++)
+              {
+                JSONObject obj = array.getJSONObject(i);
+
+                customer_name = obj.getString("customer_name");
+
+                lati = Double.parseDouble(obj.optString("lat"));
+
+                longi = Double.parseDouble(obj.optString("lang"));
+
+                LatLng latLng = new LatLng(lati, longi);
+
+                googleMap.addMarker(new MarkerOptions().position(latLng).title(customer_name).snippet("Customer"));
+
+                CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng).zoom(15).build();
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+              }
             }
-        });
-
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getDialog().dismiss();
+            else
+            {
+              Toast.makeText(getActivity(), "No Details Found", Toast.LENGTH_SHORT).show();
             }
-        });
 
-        return v;
-    }
+          }
+          else
+          {
+            Toast.makeText(getActivity(), result.optString("statusdescription"), Toast.LENGTH_SHORT).show();
+          }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Light_NoTitleBar_Fullscreen);
-    }
+          break;
 
+        default:
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        map.onPause();
-        //images.clear();
-    }
+          break;
+      }
+    }catch (Exception e){
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        map.onResume();
-        //images = simages;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        //images.clear();
-    }
-
-    @Override
-    public void requestStarted() {
+      e.printStackTrace();
 
     }
 
-    @Override
-    public void requestCompleted(JSONObject response, int requestType) {
 
-        try {
+  }
 
-            switch (requestType) {
+  @Override
+  public void requestEndedWithError(String error, int errorcode) {
 
-                case 100:
+  }
 
-                    JSONObject result = new JSONObject(response.toString());
+  private void getRouteMap(String route_no) {
 
-                    if(result.optString("statuscode").equalsIgnoreCase("200"))
-                    {
+    try {
 
-                        JSONArray array = result.getJSONArray("customer_route_details");
-                        if(array.length() != 0)
-                        {
-                            for(int i=0;i<array.length();i++)
-                            {
-                                JSONObject obj = array.getJSONObject(i);
+      JSONObject object=new JSONObject();
 
-                                customer_name = obj.getString("customer_name");
+      object.put("route_no", route_no);
 
-                                lati = Double.parseDouble(obj.optString("lat"));
+      new MethodResquest(getActivity(),  this, Constants.get_route_latlan, object.toString(),100);
 
-                                longi = Double.parseDouble(obj.optString("lang"));
+    } catch (Exception e) {
 
-                                LatLng latLng = new LatLng(lati, longi);
-
-                                googleMap.addMarker(new MarkerOptions().position(latLng).title(customer_name).snippet("Customer"));
-
-                                CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng).zoom(15).build();
-                                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                            }
-                        }
-                        else
-                        {
-                            Toast.makeText(getActivity(), "No Details Found", Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                    else
-                    {
-                        Toast.makeText(getActivity(), result.optString("statusdescription"), Toast.LENGTH_SHORT).show();
-                    }
-
-                    break;
-
-                default:
-
-                    break;
-            }
-        }catch (Exception e){
-
-            e.printStackTrace();
-
-        }
-
+      e.printStackTrace();
 
     }
 
-    @Override
-    public void requestEndedWithError(String error, int errorcode) {
-
-    }
-
-    private void getRouteMap(String route_no) {
-
-        try {
-
-            JSONObject object=new JSONObject();
-
-            object.put("route_no", route_no);
-
-            new MethodResquest(getActivity(),  this, Constants.get_route_latlan, object.toString(),100);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-        }
-
-    }
+  }
 
 
 }

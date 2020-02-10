@@ -8,10 +8,10 @@ import org.json.JSONObject;
 
 public interface RequestHandler {
 
-    public void requestStarted();
+  public void requestStarted();
 
-    public void requestCompleted(JSONObject response, int requestType);
+  public void requestCompleted(JSONObject response, int requestType);
 
-    public void requestEndedWithError(String error, int errorcode);
+  public void requestEndedWithError(String error, int errorcode);
 
 }

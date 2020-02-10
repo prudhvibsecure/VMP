@@ -18,82 +18,90 @@ import java.util.ArrayList;
 
 public class RoutesListAdapter extends RecyclerView.Adapter<RoutesListAdapter.ViewHolder> {
 
-    private ArrayList<RoutesModel>routes;
+  private ArrayList<RoutesModel>routes;
 
-    private LayoutInflater inflater;
+  private LayoutInflater inflater;
 
-    Context context;
+  Context context;
 
-    private ClickListener listener;
+  private ClickListener listener;
+
+  String type;
 
 
-    public RoutesListAdapter(Context context, ArrayList<RoutesModel> routes, ClickListener listener)
+  public RoutesListAdapter(Context context, ArrayList<RoutesModel> routes, ClickListener listener, String type)
+  {
+    this.context = context;
+
+    this.routes  = routes;
+
+    this.listener = listener;
+
+    inflater = LayoutInflater.from(context);
+
+    this.type = type;
+  }
+
+  @NonNull
+  @Override
+  public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+    View view = inflater.inflate(R.layout.route_item, parent,false);
+    return new ViewHolder(view);
+  }
+
+  @Override
+  public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+
+    RoutesModel model = routes.get(position);
+
+    holder.name.setText(model.getRoute_name());
+
+    holder.date.setText(Utils.getDate(Long.parseLong(model.getOrder_allocation_date())*1000));
+
+    if(type.equals("indent"))
     {
-        this.context = context;
-
-        this.routes  = routes;
-
-        this.listener = listener;
-
-        inflater = LayoutInflater.from(context);
-    }
-
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        View view = inflater.inflate(R.layout.route_item, parent,false);
-        return new ViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-
-        RoutesModel model = routes.get(position);
-
-        holder.name.setText(model.getRoute_name());
-
-        holder.date.setText(Utils.getDate(Long.parseLong(model.getOrder_allocation_date())*1000));
-
-        if(model.getSession().equalsIgnoreCase("1"))
-        {
-            holder.session.setText("Morning");
-        }
-        else
-        {
-            holder.session.setText("Afternoon");
-        }
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                listener.onClick(position, view);
-
-            }
-        });
+      if(model.getSession().equalsIgnoreCase("1"))
+      {
+        holder.session.setText("Morning");
+      }
+      else
+      {
+        holder.session.setText("Afternoon");
+      }
 
     }
 
-    @Override
-    public int getItemCount() {
+    holder.itemView.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
 
-        return routes.size();
+        listener.onClick(position, view);
+
+      }
+    });
+
+  }
+
+  @Override
+  public int getItemCount() {
+
+    return routes.size();
+  }
+
+  public class ViewHolder extends RecyclerView.ViewHolder {
+
+    public TextView name, date, session;
+
+    public ViewHolder(@NonNull View itemView) {
+      super(itemView);
+
+      name = itemView.findViewById(R.id.name);
+
+      date = itemView.findViewById(R.id.date);
+
+      session = itemView.findViewById(R.id.session);
+
     }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-
-        public TextView name, date, session;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            name = itemView.findViewById(R.id.name);
-
-            date = itemView.findViewById(R.id.date);
-
-            session = itemView.findViewById(R.id.session);
-
-        }
-    }
+  }
 }

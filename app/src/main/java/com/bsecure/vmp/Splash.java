@@ -10,27 +10,27 @@ import com.bsecure.vmp.commons.AppPreferences;
 
 public class Splash extends AppCompatActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_splash);
 
-        new Handler().postDelayed(new Runnable() {
+    new Handler().postDelayed(new Runnable() {
 
-            @Override
-            public void run() {
+      @Override
+      public void run() {
 
-                if(!AppPreferences.getInstance(Splash.this).getFromStore("eid").equals("")) {
+        if(!AppPreferences.getInstance(Splash.this).getFromStore("eid").equals("")) {
 
-                    startActivity(new Intent(Splash.this, Dashboard.class));
-                }
-                else
-                {
-                    startActivity(new Intent(Splash.this, Login.class));
-                }
+          startActivity(new Intent(Splash.this, Dashboard.class));
+        }
+        else
+        {
+          startActivity(new Intent(Splash.this, Login.class));
+        }
 
-            }
+      }
 
-        }, 5000);
-    }
+    }, 5000);
+  }
 }

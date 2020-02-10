@@ -6,6 +6,6 @@ package com.bsecure.vmp.Utils;
 
 public class Constants {
 
-    public static final String PATH = "https://bsecuresoftechsolutions.com/vmps/";
+  public static final String PATH = "https://bsecuresoftechsolutions.com/vmps/";
 
 }

@@ -34,9 +34,13 @@ import java.util.ArrayList;
 
 public class Cash extends AppCompatActivity implements RequestHandler {
 
+
+
     private EditText leaks, paid, milk, curd, invamt, spotcom,monthlycom, netamount, olddue,payable, todaydue,totaldue ;
 
-    private String oaid, cust_id, indent_collection_id, oad, session;
+    private String oaid, cust_id, indent_collection_id, oad, session, head, rname, rno;
+
+    double net, paidam, leak, old, tdue, todue;
 
     private TextView save;
 
@@ -47,18 +51,6 @@ public class Cash extends AppCompatActivity implements RequestHandler {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cash);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        toolbar.setTitle("Cash Collection");//Organization Head
-
-        toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimaryDark));
-
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
         Intent in = getIntent();
 
         oaid = in.getStringExtra("oaid");
@@ -68,6 +60,25 @@ public class Cash extends AppCompatActivity implements RequestHandler {
         oad = in.getStringExtra("oad");
 
         session = in.getStringExtra("session");
+
+        rname = in.getStringExtra("rname");
+
+        rno = in.getStringExtra("r_no");
+
+        head = in.getStringExtra("head");
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        toolbar.setTitle(head);//Organization Head
+
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimaryDark));
+
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
 
         save = findViewById(R.id.save);
 
@@ -97,6 +108,110 @@ public class Cash extends AppCompatActivity implements RequestHandler {
 
         leaks.addTextChangedListener(new TextWatcher() {
             @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                if(!s.toString().trim().equals("")) {
+
+                    net = Double.parseDouble(netamount.getText().toString());
+
+                    old = Double.parseDouble(olddue.getText().toString());
+
+                    if(paid.getText().toString().equals(""))
+                    {
+                        paidam = 0;
+                    }
+                    else {
+                        paidam = Double.parseDouble(paid.getText().toString());
+                    }
+
+                    leak = Double.parseDouble(s.toString());
+
+                    tdue = net-(paidam+leak);
+
+                    if(tdue < 0)
+                    {
+                        todaydue.setText("0");
+                    }
+                    else
+                    {
+                        todaydue.setText(df.format(tdue));
+                    }
+
+                    //todaydue.setText(String.valueOf(df.format( net - paidam+ leak)));
+
+                    if(leak == 0)
+                    {
+                        leaks.setText("");
+                    }
+
+
+                    //tdue = net - paidam+ leak;
+                    todue = old + tdue;
+                    totaldue.setText(df.format(todue));
+
+                }else
+                {
+                    todaydue.setText("");
+                    totaldue.setText("");
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+
+
+            }
+        });
+
+        /*leaks.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus) {
+                    if(leaks.getText().toString().length() == 0 || leaks.getText().toString().equals("0"))
+                    {
+                        leaks.setText("");
+                    }
+
+                }else
+                {
+                    if(leaks.getText().toString().length() == 0)
+                    {
+                        leaks.setText("0");
+                    }
+                }
+            }
+        });*/
+
+
+
+        /*paid.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+
+                if(hasFocus) {
+                    if(paid.getText().toString().length() == 0 || paid.getText().toString().equals("0"))
+                    {
+                        paid.setText("");
+                    }
+                }else
+                {
+                    if(paid.getText().toString().length() == 0)
+                    {
+                        paid.setText("");
+                    }
+                }
+
+            }
+        });*/
+
+        /*leaks.addTextChangedListener(new TextWatcher() {
+            @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
@@ -104,14 +219,13 @@ public class Cash extends AppCompatActivity implements RequestHandler {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
 
             }
-        });
+        });*/
 
         paid.addTextChangedListener(new TextWatcher() {
             @Override
@@ -124,31 +238,47 @@ public class Cash extends AppCompatActivity implements RequestHandler {
 
                 if(!charSequence.toString().trim().equals("")) {
 
-                    Double net = Double.parseDouble(netamount.getText().toString());
+                    net = Double.parseDouble(netamount.getText().toString());
 
-                    Double paid = Double.parseDouble(charSequence.toString());
+                    old = Double.parseDouble(olddue.getText().toString());
 
-                    todaydue.setText(String.valueOf(df.format( net - paid)));
+                    paidam = Double.parseDouble(charSequence.toString());
 
-                    if(paid == 0)
+                    if(leaks.getText().toString().equals(""))
+                    {
+                        leak = 0;
+                    }
+                    else {
+                        leak = Double.parseDouble(leaks.getText().toString().trim());
+                    }
+
+                    tdue = net-(paidam+leak);
+
+                    if(tdue < 0)
                     {
                         todaydue.setText("0");
                     }
-                    Double old = Double.parseDouble(olddue.getText().toString());
-
-                    Double today = net - paid;
-
-                    totaldue.setText(String.valueOf(df.format(old + today)));
-
-                    if(paid == 0)
+                    else
                     {
-                        todaydue.setText("0");
-                        totaldue.setText("0");
+                        todaydue.setText(df.format(tdue));
                     }
+
+                    //todaydue.setText(String.valueOf(df.format( net - paidam+ leak)));
+
+                    if(paidam == 0)
+                    {
+                        todaydue.setText("");
+                    }
+
+
+                    //tdue = net - paidam+ leak;
+                    todue = old + tdue;
+                    totaldue.setText(df.format(todue));
+
                 }else
                 {
-                    todaydue.setText("0");
-                    totaldue.setText("0");
+                    todaydue.setText("");
+                    totaldue.setText("");
                 }
 
             }
@@ -170,6 +300,39 @@ public class Cash extends AppCompatActivity implements RequestHandler {
             }
         });
 
+        /*if(netamount.getText().toString().equals(""))
+        {
+            net = 0;
+        }else
+        {
+            net = Double.parseDouble(netamount.getText().toString().trim());
+        }*/
+
+        /*if(paid.getText().toString().equals(""))
+        {
+            paidam = 0;
+        }
+        else
+        {
+            paidam = Double.parseDouble(paid.getText().toString().trim());
+        }
+*/
+        if(leaks.getText().toString().equals(""))
+        {
+            leak = 0;
+        }
+        else
+        {
+            leak = Double.parseDouble(leaks.getText().toString());
+        }
+
+       /* if(olddue.getText().toString().equals(""))
+        {
+            old = 0;
+        }
+        else {
+            old = Double.parseDouble(olddue.getText().toString());
+        }*/
 
     }
 
@@ -192,13 +355,36 @@ public class Cash extends AppCompatActivity implements RequestHandler {
             JSONObject object=new JSONObject();
 
             object.put("indent_collection_id", indent_collection_id);
-            object.put("leaks", leaks.getText().toString());
-            object.put("paid", paid.getText().toString());
-            object.put("today_due", todaydue.getText().toString());
-            object.put("total_due", totaldue.getText().toString());
+            object.put("leaks", leak);
+            object.put("paid", paidam);
+            /*if(todaydue.getText().toString().equals("0"))
+            {
+                object.put("today_due", df.format( net - paidam+ leak));
+            }
+            else
+            {
+                object.put("today_due", todaydue.getText().toString());
+            }*/
+            //object.put("today_due", todaydue.getText().toString());
+
+            object.put("today_due",tdue);
+
+            /*if(totaldue.getText().toString().equals("0"))
+            {
+                object.put("total_due", old+net-paidam+leak);
+            }
+            else
+            {
+                object.put("total_due", totaldue.getText().toString());
+            }*/
+            //object.put("total_due", totaldue.getText().toString());
+
+            object.put("total_due",todue);
             object.put("paid_date", System.currentTimeMillis());
             object.put("session", session);
             object.put("customer_id", cust_id);
+            object.put("route_name", rname);
+            object.put("route_no", rno);
 
             new MethodResquest(this,  this, Constants.edit_indent_collection, object.toString(),200);
 
@@ -254,53 +440,98 @@ public class Cash extends AppCompatActivity implements RequestHandler {
                     if(result.optString("statuscode").equalsIgnoreCase("200"))
                     {
                         JSONArray array = result.getJSONArray("indent_collection_details");
-
-                        JSONObject obj = array.getJSONObject(0);
-
-                        milk.setText(obj.optString("milk_qty"));
-
-                        curd.setText(obj.optString("curd_qty"));
-
-                        invamt.setText(obj.optString("inv_amout"));
-
-                        spotcom.setText(obj.optString("spot_commision"));
-
-                        monthlycom.setText(obj.optString("month_commission"));
-
-                        netamount.setText(obj.optString("net_amount"));
-
-                        olddue.setText(obj.optString("old_due"));
-
-                        payable.setText(obj.optString("payable"));
-
-                        leaks.setText(obj.optString("leaks"));
-
-                        if(obj.optString("paid").equalsIgnoreCase("null"))
+                        if(array.length() > 0)
                         {
-                            paid.setText("");
+                            JSONObject obj = array.getJSONObject(0);
+
+                            net = Double.parseDouble(obj.optString("net_amount"));
+
+                            old = Double.parseDouble(obj.optString("old_due"));
+
+                            ////////
+
+                            milk.setText(obj.optString("milk_qty"));
+
+                            curd.setText(obj.optString("curd_qty"));
+
+                            invamt.setText(obj.optString("inv_amout"));
+
+                            spotcom.setText(obj.optString("spot_commision"));
+
+                            monthlycom.setText(obj.optString("month_commission"));
+
+                            netamount.setText(obj.optString("net_amount"));
+
+                            olddue.setText(obj.optString("old_due"));
+
+                            payable.setText(obj.optString("payable"));
+
+                            if(obj.optString("today_due").equals("0") || obj.optString("today_due").equals(""))
+                            {
+                                todaydue.setText("0");
+                                tdue = 0;
+                            }
+                            else
+                            {
+                                todaydue.setText(obj.optString("today_due"));
+                                tdue = Double.parseDouble(obj.optString("today_due"));
+                            }
+
+                            if(obj.optString("total_due").equals("0") || obj.optString("total_due").equals(""))
+                            {
+                                totaldue.setText("0");
+                                todue = 0;
+                            }
+                            else
+                            {
+                                totaldue.setText(obj.optString("total_due"));
+                                todue = Double.parseDouble(obj.optString("total_due"));
+                            }
+
+                            indent_collection_id = obj.optString("indent_collection_id");
+
+                            if(obj.optString("leaks").equals("0") || obj.optString("leaks").equals(""))
+                            {
+                                leaks.setText("");
+                                leak = 0;
+                            }
+                            else
+                            {
+                                leaks.setText(obj.optString("leaks"));
+                                leak = Double.parseDouble(obj.optString("leaks"));
+                            }
+
+                            if(obj.optString("paid").equals("0") || obj.optString("paid").equals(""))
+                            {
+                                paid.setText("");
+                                paidam = 0;
+                            }
+                            else
+                            {
+                                paid.setText(obj.optString("paid"));
+                                paidam = Double.parseDouble(obj.optString("paid"));
+                            }
+
+                            tdue = net-(paidam+leak);
+                            todue = tdue+old;
+                            int status = obj.optInt("status");
+                            if(status == 1)
+                            {
+                                leaks.setEnabled(false);
+                                paid.setEnabled(false);
+                                save.setEnabled(false);
+                            }
+
                         }
-                        else {
-                            paid.setText(obj.optString("paid"));
-                        }
-
-                        todaydue.setText(obj.optString("today_due"));
-
-                        totaldue.setText(obj.optString("total_due"));
-
-                        indent_collection_id = obj.optString("indent_collection_id");
-
-                        int status = obj.optInt("status");
-                        if(status == 1)
+                        else
                         {
-                            leaks.setEnabled(false);
-                            paid.setEnabled(false);
-                            save.setEnabled(false);
+                            Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
                         }
 
                     }
                     else
                     {
-                        Toast.makeText(this, result.optString("statusdescription"), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "No Data Found", Toast.LENGTH_SHORT).show();
                     }
 
                     break;

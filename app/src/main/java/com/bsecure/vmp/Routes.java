@@ -33,202 +33,212 @@ import java.util.ArrayList;
 
 public class Routes extends AppCompatActivity implements RequestHandler, ClickListener {
 
-    private RecyclerView list;
+  private RecyclerView list;
 
-    private ArrayList<RoutesModel> routes;
+  private ArrayList<RoutesModel> routes;
 
-    private RoutesListAdapter adapter;
+  private RoutesListAdapter adapter;
 
-    private String eid, type;
+  private String eid, type, head;
 
-    private ProgressBar progress;
+  private ProgressBar progress;
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_routes);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_routes);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    Intent in  = getIntent();
 
-        toolbar.setTitle("Routes");//Organization Head
+    head = in.getStringExtra("head");
 
-        toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimaryDark));
+    type = in.getStringExtra("type");
 
-        setSupportActionBar(toolbar);
+    progress = findViewById(R.id.progress);
 
-        ActionBar actionBar = getSupportActionBar();
+    list = findViewById(R.id.list);
 
-        actionBar.setDisplayHomeAsUpEnabled(true);
+    eid = AppPreferences.getInstance(Routes.this).getFromStore("eid");
 
-        actionBar.setDisplayShowHomeEnabled(true);
+    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        Intent in  = getIntent();
+    toolbar.setTitle(head);//Organization Head
 
-        type = in.getStringExtra("type");
+    toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimaryDark));
 
-        progress = findViewById(R.id.progress);
+    setSupportActionBar(toolbar);
 
-        list = findViewById(R.id.list);
+    ActionBar actionBar = getSupportActionBar();
 
-        eid = AppPreferences.getInstance(Routes.this).getFromStore("eid");
+    actionBar.setDisplayHomeAsUpEnabled(true);
 
-        getRoutes(eid);
+    actionBar.setDisplayShowHomeEnabled(true);
+
+    getRoutes(eid);
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+
+    switch (item.getItemId()) {
+      case android.R.id.home:
+        finish();
+        break;
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
+  private void getRoutes(String eid) {
+
+    try {
+
+      JSONObject object=new JSONObject();
+
+      object.put("employee_id", eid);
+
+      if(type.equals("indent")) {
+        new MethodResquest(this, this, Constants.get_routes, object.toString(), 100);
+      }
+      else
+      {
+        new MethodResquest(this, this, Constants.get_routes_cash, object.toString(), 100);
+      }
+
+    } catch (Exception e) {
+
+      e.printStackTrace();
+
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+  }
 
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+  @Override
+  public void requestStarted() {
 
-    private void getRoutes(String eid) {
+  }
 
-        try {
+  @Override
+  public void requestCompleted(JSONObject response, int requestType) {
 
-            JSONObject object=new JSONObject();
+    try {
 
-            object.put("employee_id", eid);
+      switch (requestType) {
 
-            new MethodResquest(this,  this, Constants.get_routes, object.toString(),100);
+        case 100:
 
-        } catch (Exception e) {
+          JSONObject result = new JSONObject(response.toString());
 
-            e.printStackTrace();
+          if(result.optString("statuscode").equalsIgnoreCase("200"))
+          {
+            progress.setVisibility(View.GONE);
 
-        }
+            routes = new ArrayList<>();
 
-    }
+            JSONArray array = result.getJSONArray("route_details");
 
-    @Override
-    public void requestStarted() {
+            for(int i = 0; i< array.length();i++) {
 
-    }
+              JSONObject obj = array.getJSONObject(i);
 
-    @Override
-    public void requestCompleted(JSONObject response, int requestType) {
+              RoutesModel model = new RoutesModel();
 
-        try {
+              model.setRoute_name(obj.optString("route_name"));
 
-            switch (requestType) {
+              model.setRoute_no(obj.optString("route_no"));
 
-                case 100:
+              model.setOrder_allocation_date(obj.optString("order_allocation_date"));
 
-                    JSONObject result = new JSONObject(response.toString());
+              model.setOrder_allocation_id(obj.optString("order_allocation_id"));
 
-                    if(result.optString("statuscode").equalsIgnoreCase("200"))
-                    {
-                        progress.setVisibility(View.GONE);
+              model.setSession(obj.optString("session"));
 
-                        routes = new ArrayList<>();
+              routes.add(model);
 
-                        JSONArray array = result.getJSONArray("route_details");
-
-                        for(int i = 0; i< array.length();i++) {
-
-                            JSONObject obj = array.getJSONObject(i);
-
-                            RoutesModel model = new RoutesModel();
-
-                            model.setRoute_name(obj.optString("route_name"));
-
-                            model.setRoute_no(obj.optString("route_no"));
-
-                            model.setOrder_allocation_date(obj.optString("order_allocation_date"));
-
-                            model.setOrder_allocation_id(obj.optString("order_allocation_id"));
-
-                            model.setSession(obj.optString("session"));
-
-                            routes.add(model);
-
-                        }
-
-                        LinearLayoutManager manager = new LinearLayoutManager(this);
-
-                        list.setLayoutManager(manager);
-
-                        adapter = new RoutesListAdapter(this, routes, this);
-
-                        list.setAdapter(adapter);
-
-                    }
-                    else
-                    {
-                        progress.setVisibility(View.GONE);
-
-                        Toast.makeText(this, result.optString("statusdescription"), Toast.LENGTH_SHORT).show();
-                    }
-
-                    break;
-
-                default:
-
-                    break;
             }
-        }catch (Exception e){
 
-            e.printStackTrace();
+            LinearLayoutManager manager = new LinearLayoutManager(this);
 
-        }
+            list.setLayoutManager(manager);
 
-    }
+            adapter = new RoutesListAdapter(this, routes, this, type);
 
-    @Override
-    public void requestEndedWithError(String error, int errorcode) {
+            list.setAdapter(adapter);
 
-    }
+          }
+          else
+          {
+            progress.setVisibility(View.GONE);
 
-    @Override
-    public void onClick(int position, View view) {
+            Toast.makeText(this, result.optString("statusdescription"), Toast.LENGTH_SHORT).show();
+          }
 
-        if(type.equals("m"))
-        {
-            Bundle bundle = new Bundle();
+          break;
 
-            bundle.putString("route_no", routes.get(position).getRoute_no());
+        default:
 
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+          break;
+      }
+    }catch (Exception e){
 
-            RouteMapDialogue newFragment = RouteMapDialogue.newInstance();
-
-            newFragment.setArguments(bundle);
-
-            newFragment.show(ft, "Location");
-
-        }
-        else if(type.equals("r"))
-        {
-            return;
-        }
-        else {
-
-            Intent in = new Intent(Routes.this, Customers.class);
-
-            in.putExtra("rno", routes.get(position).getRoute_no());
-
-            in.putExtra("oaid", routes.get(position).getOrder_allocation_id());
-
-            in.putExtra("session", routes.get(position).getSession());
-
-            in.putExtra("oad", routes.get(position).getOrder_allocation_date());
-
-            in.putExtra("type", type);
-
-            in.putExtra("rname", routes.get(position).getRoute_name());
-
-            startActivity(in);
-        }
+      e.printStackTrace();
 
     }
 
-    @Override
-    public void onLongClick(int position, View view) {
+  }
+
+  @Override
+  public void requestEndedWithError(String error, int errorcode) {
+
+  }
+
+  @Override
+  public void onClick(int position, View view) {
+
+    if(type.equals("map"))
+    {
+      Bundle bundle = new Bundle();
+
+      bundle.putString("route_no", routes.get(position).getRoute_no());
+
+      FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+      RouteMapDialogue newFragment = RouteMapDialogue.newInstance();
+
+      newFragment.setArguments(bundle);
+
+      newFragment.show(ft, "Location");
 
     }
+    else if(type.equals("routes"))
+    {
+      return;
+    }
+    else {
+
+      Intent in = new Intent(Routes.this, Customers.class);
+
+      in.putExtra("rno", routes.get(position).getRoute_no());
+
+      in.putExtra("oaid", routes.get(position).getOrder_allocation_id());
+
+      in.putExtra("session", routes.get(position).getSession());
+
+      in.putExtra("oad", routes.get(position).getOrder_allocation_date());
+
+      in.putExtra("type", type);
+
+      in.putExtra("rname", routes.get(position).getRoute_name());
+
+      in.putExtra("head", head);
+
+      startActivity(in);
+    }
+
+  }
+
+  @Override
+  public void onLongClick(int position, View view) {
+
+  }
 }

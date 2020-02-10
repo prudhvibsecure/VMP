@@ -31,109 +31,109 @@ import org.json.JSONObject;
 
 public class MapDialogue extends DialogFragment {
 
-    private String TAG = MapDialogue.class.getSimpleName();
+  private String TAG = MapDialogue.class.getSimpleName();
 
-    private ImageView close;
+  private ImageView close;
 
-    private double lati;
+  private double lati;
 
-    private double longi;
+  private double longi;
 
-    private String customer_name;
+  private String customer_name;
 
-    private GoogleMap googleMap;
+  private GoogleMap googleMap;
 
-    private MapView map;
+  private MapView map;
 
-    public static MapDialogue newInstance() {
-        MapDialogue f = new MapDialogue();
-        return f;
+  public static MapDialogue newInstance() {
+    MapDialogue f = new MapDialogue();
+    return f;
+  }
+
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                           Bundle savedInstanceState) {
+    View v = inflater.inflate(R.layout.map_fragment, container, false);
+
+    close = v.findViewById(R.id.close);
+
+    lati = getArguments().getDouble("lat");
+
+    longi = getArguments().getDouble("lang");
+
+    customer_name = getArguments().getString("cname");
+
+    map = v.findViewById(R.id.map);
+
+    map.onCreate(savedInstanceState);
+
+    map.onResume();
+
+    try {
+      MapsInitializer.initialize(getActivity().getApplicationContext());
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.map_fragment, container, false);
+    map.getMapAsync(new OnMapReadyCallback() {
+      @Override
+      public void onMapReady(GoogleMap Map) {
 
-        close = v.findViewById(R.id.close);
+        googleMap = Map;
 
-        lati = getArguments().getDouble("lat");
+        // For showing a move to my location button
+        googleMap.setMyLocationEnabled(true);
 
-        longi = getArguments().getDouble("lang");
+        // For dropping a marker at a point on the Map
+        LatLng sydney = new LatLng(lati, longi);
+        googleMap.addMarker(new MarkerOptions().position(sydney).title(customer_name).snippet("Customer"));
 
-        customer_name = getArguments().getString("cname");
+        // For zooming automatically to the location of the marker
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(20).build();
+        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+      }
+    });
 
-        map = v.findViewById(R.id.map);
+    close.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        getDialog().dismiss();
+      }
+    });
 
-        map.onCreate(savedInstanceState);
-
-        map.onResume();
-
-        try {
-            MapsInitializer.initialize(getActivity().getApplicationContext());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        map.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap Map) {
-
-                googleMap = Map;
-
-                // For showing a move to my location button
-                googleMap.setMyLocationEnabled(true);
-
-                // For dropping a marker at a point on the Map
-                LatLng sydney = new LatLng(lati, longi);
-                googleMap.addMarker(new MarkerOptions().position(sydney).title(customer_name).snippet("Customer"));
-
-                // For zooming automatically to the location of the marker
-                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(20).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            }
-        });
-
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getDialog().dismiss();
-            }
-        });
-
-        return v;
-    }
+    return v;
+  }
 
 
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Light_NoTitleBar_Fullscreen);
-    }
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Light_NoTitleBar_Fullscreen);
+  }
 
 
 
 
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        map.onPause();
-        //images.clear();
-    }
+  @Override
+  public void onPause() {
+    super.onPause();
+    map.onPause();
+    //images.clear();
+  }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        map.onResume();
-        //images = simages;
-    }
+  @Override
+  public void onResume() {
+    super.onResume();
+    map.onResume();
+    //images = simages;
+  }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        //images.clear();
-    }
+  @Override
+  public void onDetach() {
+    super.onDetach();
+    //images.clear();
+  }
 
 }

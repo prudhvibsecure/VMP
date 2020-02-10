@@ -9,215 +9,215 @@ import java.util.Map;
 
 public class AppPreferences {
 
-    private SharedPreferences pref = null;
+  private SharedPreferences pref = null;
 
-    private static AppPreferences appPref = null;
+  private static AppPreferences appPref = null;
 
-    public static AppPreferences getInstance(Context context) {
+  public static AppPreferences getInstance(Context context) {
 
-        if (appPref == null)
+    if (appPref == null)
 
-            appPref = new AppPreferences(context);
+      appPref = new AppPreferences(context);
 
-        return appPref;
+    return appPref;
 
-    }
+  }
 
-    private AppPreferences(Context context) {
+  private AppPreferences(Context context) {
 
-        if (pref == null) {
+    if (pref == null) {
 
-            pref = context.getSharedPreferences("vmp", 0);
-
-        }
+      pref = context.getSharedPreferences("vmp", 0);
 
     }
 
-    public void addToStore(String key, String value, boolean mode) {
+  }
 
-        SharedPreferences.Editor editor = pref.edit();
+  public void addToStore(String key, String value, boolean mode) {
 
-        try {
+    SharedPreferences.Editor editor = pref.edit();
 
-            if (value.length() > 0) {
+    try {
 
-                value = AESEncryptionDecryption.encrypt(value);
+      if (value.length() > 0) {
 
-            }
+        value = AESEncryptionDecryption.encrypt(value);
+
+      }
 
             /*if(key.equalsIgnoreCase("test::::::")) {
                 TraceUtils.logE(key, value);
             }*/
 
-        } catch (Exception e) {
-            TraceUtils.logException(e);
-        }
+    } catch (Exception e) {
+      TraceUtils.logException(e);
+    }
 
-        editor.putString(key, value);
+    editor.putString(key, value);
 
-        if (mode) {
+    if (mode) {
 
-            editor.apply();
+      editor.apply();
 
-            return;
-
-        }
-
-        editor.commit();
+      return;
 
     }
 
-    public String getFromStore(String key) {
+    editor.commit();
 
-        String val = pref.getString(key, "");
+  }
 
-        if (val.trim().length() > 0) {
+  public String getFromStore(String key) {
 
-            try {
+    String val = pref.getString(key, "");
 
-                val = AESEncryptionDecryption.decrypt(val);
+    if (val.trim().length() > 0) {
+
+      try {
+
+        val = AESEncryptionDecryption.decrypt(val);
 
                 /*if(key.equalsIgnoreCase("test::::::")) {
                     TraceUtils.logE(key, val);
                 }*/
 
-            } catch (Exception e) {
-                TraceUtils.logException(e);
-            }
-        }
+      } catch (Exception e) {
+        TraceUtils.logException(e);
+      }
+    }
 
-        return val;
+    return val;
+
+  }
+
+  public void addBooleanToStore(String key, boolean value, boolean mode) {
+
+    SharedPreferences.Editor editor = pref.edit();
+
+    editor.putBoolean(key, value);
+
+    if (mode) {
+
+      editor.apply();
+
+      return;
 
     }
 
-    public void addBooleanToStore(String key, boolean value, boolean mode) {
+    editor.commit();
 
-        SharedPreferences.Editor editor = pref.edit();
+  }
 
-        editor.putBoolean(key, value);
+  public boolean getBooleanFromStore(String key) {
+    return pref.getBoolean(key, false);
+  }
 
-        if (mode) {
+  public void addFloatToStore(String key, float value, boolean mode) {
 
-            editor.apply();
+    SharedPreferences.Editor editor = pref.edit();
 
-            return;
+    editor.putFloat(key, value);
 
-        }
+    if (mode) {
 
-        editor.commit();
+      editor.apply();
 
-    }
-
-    public boolean getBooleanFromStore(String key) {
-        return pref.getBoolean(key, false);
-    }
-
-    public void addFloatToStore(String key, float value, boolean mode) {
-
-        SharedPreferences.Editor editor = pref.edit();
-
-        editor.putFloat(key, value);
-
-        if (mode) {
-
-            editor.apply();
-
-            return;
-
-        }
-
-        editor.commit();
+      return;
 
     }
 
-    public float getFloatFromStore(String key) {
-        return pref.getFloat(key, 0);
-    }
+    editor.commit();
 
-    public void addIntegerToStore(String key, int value, boolean mode) {
+  }
 
-        SharedPreferences.Editor editor = pref.edit();
+  public float getFloatFromStore(String key) {
+    return pref.getFloat(key, 0);
+  }
 
-        editor.putInt(key, value);
+  public void addIntegerToStore(String key, int value, boolean mode) {
 
-        if (mode) {
+    SharedPreferences.Editor editor = pref.edit();
 
-            editor.apply();
+    editor.putInt(key, value);
 
-            return;
+    if (mode) {
 
-        }
+      editor.apply();
 
-        editor.commit();
-
-    }
-
-    public int getIntegerFromStore(String key) {
-        return pref.getInt(key, 0);
-    }
-
-
-    public long getLongFromStore(String key) {
-        return pref.getLong(key, 0);
-    }
-
-    public void addLongToStore(String key, long value, boolean mode) {
-
-        SharedPreferences.Editor editor = pref.edit();
-
-        editor.putLong(key, value);
-
-        if (mode) {
-
-            editor.apply();
-
-            return;
-
-        }
-
-        editor.commit();
+      return;
 
     }
 
-    public void clearSharedPreferences(boolean mode) {
+    editor.commit();
 
-        SharedPreferences.Editor editor = pref.edit();
+  }
 
-        editor.clear();
+  public int getIntegerFromStore(String key) {
+    return pref.getInt(key, 0);
+  }
 
-        if (mode) {
 
-            editor.apply();
+  public long getLongFromStore(String key) {
+    return pref.getLong(key, 0);
+  }
 
-            return;
+  public void addLongToStore(String key, long value, boolean mode) {
 
-        }
+    SharedPreferences.Editor editor = pref.edit();
 
-        editor.commit();
+    editor.putLong(key, value);
 
-    }
+    if (mode) {
 
-    public void removeFromStore(String key, boolean mode) {
+      editor.apply();
 
-        SharedPreferences.Editor editor = pref.edit();
-
-        editor.remove(key);
-
-        if (mode) {
-
-            editor.apply();
-
-            return;
-
-        }
-
-        editor.commit();
+      return;
 
     }
 
-    public Map<String,?> getPref(){
-        return pref.getAll();
+    editor.commit();
+
+  }
+
+  public void clearSharedPreferences(boolean mode) {
+
+    SharedPreferences.Editor editor = pref.edit();
+
+    editor.clear();
+
+    if (mode) {
+
+      editor.apply();
+
+      return;
 
     }
+
+    editor.commit();
+
+  }
+
+  public void removeFromStore(String key, boolean mode) {
+
+    SharedPreferences.Editor editor = pref.edit();
+
+    editor.remove(key);
+
+    if (mode) {
+
+      editor.apply();
+
+      return;
+
+    }
+
+    editor.commit();
+
+  }
+
+  public Map<String,?> getPref(){
+    return pref.getAll();
+
+  }
 
 }

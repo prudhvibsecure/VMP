@@ -16,19 +16,12 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:background="#fff"
+        android:gravity="center_vertical"
         android:minHeight="?attr/actionBarSize"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         android:theme="@style/Theme.MyFancyTheme">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="VMP"
-            android:textSize="30sp"
-            android:textColor="@color/colorPrimaryDark"/>
 
     </androidx.appcompat.widget.Toolbar>
 

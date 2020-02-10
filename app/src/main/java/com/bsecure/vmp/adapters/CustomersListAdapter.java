@@ -21,55 +21,55 @@ import java.util.ArrayList;
 
 public class CustomersListAdapter extends RecyclerView.Adapter<CustomersListAdapter.ViewHolder>{
 
-    private ArrayList<CustomerModel> customers;
+  private ArrayList<CustomerModel> customers;
 
-    private LayoutInflater inflater;
+  private LayoutInflater inflater;
 
-    Context context;
+  Context context;
 
-    private ClickListener listener;
+  private ClickListener listener;
 
-    public CustomersListAdapter(Context context, ArrayList<CustomerModel>customers, ClickListener listener)
-    {
-        this.context = context;
+  public CustomersListAdapter(Context context, ArrayList<CustomerModel>customers, ClickListener listener)
+  {
+    this.context = context;
 
-        this.customers  = customers;
+    this.customers  = customers;
 
-        this.listener = listener;
+    this.listener = listener;
 
-        inflater = LayoutInflater.from(context);
-    }
+    inflater = LayoutInflater.from(context);
+  }
 
-    @NonNull
-    @Override
-    public CustomersListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+  @NonNull
+  @Override
+  public CustomersListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = inflater.inflate(R.layout.customer_item, parent,false);
+    View view = inflater.inflate(R.layout.customer_item, parent,false);
 
-        return new CustomersListAdapter.ViewHolder(view);
-    }
+    return new CustomersListAdapter.ViewHolder(view);
+  }
 
-    @Override
-    public void onBindViewHolder(@NonNull final  CustomersListAdapter.ViewHolder holder, final int position) {
+  @Override
+  public void onBindViewHolder(@NonNull final  CustomersListAdapter.ViewHolder holder, final int position) {
 
-        CustomerModel model = customers.get(position);
+    CustomerModel model = customers.get(position);
 
-        holder.name.setText(model.getName());
+    holder.name.setText(model.getName());
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    holder.itemView.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
 
-                listener.onClick(position, view);
+        listener.onClick(position, view);
 
-            }
-        });
+      }
+    });
 
-        holder.opt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    holder.opt.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
 
-                listener.onClick(position, view);
+        listener.onClick(position, view);
                /* PopupMenu popup = new PopupMenu(context, holder.opt);
                 //inflating menu from xml resource
                 popup.inflate(R.menu.options_menu);
@@ -92,29 +92,29 @@ public class CustomersListAdapter extends RecyclerView.Adapter<CustomersListAdap
                 //displaying the popup
                 popup.show();*/
 
-            }
-        });
+      }
+    });
 
 
+  }
+
+  @Override
+  public int getItemCount() {
+    return customers.size();
+  }
+
+  public class ViewHolder extends RecyclerView.ViewHolder {
+
+    private TextView name;
+
+    private ImageView opt;
+
+    public ViewHolder(@NonNull View itemView) {
+      super(itemView);
+
+      name = itemView.findViewById(R.id.name);
+
+      opt = itemView.findViewById(R.id.opt);
     }
-
-    @Override
-    public int getItemCount() {
-        return customers.size();
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-
-        private TextView name;
-
-        private ImageView opt;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            name = itemView.findViewById(R.id.name);
-
-            opt = itemView.findViewById(R.id.opt);
-        }
-    }
+  }
 }

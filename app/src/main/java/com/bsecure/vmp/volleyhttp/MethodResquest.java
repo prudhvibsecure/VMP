@@ -17,9 +17,9 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+
 import com.bsecure.vmp.interfaces.MethodHandler;
 import com.bsecure.vmp.interfaces.RequestHandler;
-
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.android.volley.Request.Method.POST;
+
 
 /**
  * Created by prudhvi on 2018-05-02.
@@ -40,95 +42,95 @@ import java.util.Map;
 
 public class MethodResquest implements MethodHandler {
 
-    private Context context;
+  private Context context;
 
-    private RequestHandler requestHandler;
+  private RequestHandler requestHandler;
 
-    private String message;
+  private String message;
 
-    private int reqId = -1;
+  private int reqId = -1;
 
-    private int typeError = -1;
+  private int typeError = -1;
 
-    private static Dialog dialog = null;
+  private static Dialog dialog = null;
 
-    private JSONObject json = null;
+  private JSONObject json = null;
 
-    private String networkType = "mobile";
+  private String networkType = "mobile";
 
-    private String request_url = null;
+  private String request_url = null;
 
-    public MethodResquest(final Context context, final RequestHandler requestHandler, String url, String postdata, int request) {
-        this.context = context;
-        this.requestHandler = requestHandler;
-        this.reqId = request;
-        this.request_url = url;
+  public MethodResquest(final Context context, final RequestHandler requestHandler, String url, String postdata, int request) {
+    this.context = context;
+    this.requestHandler = requestHandler;
+    this.reqId = request;
+    this.request_url = url;
 
-        requestHandler.requestStarted();
-        if (isNetworkAvailable()) {
-            try {
-                json = new JSONObject(postdata);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            message = "Cannot connect to Internet...Please check your connection!";
-            showProgress(message, context);
-            typeError = 1;
+    requestHandler.requestStarted();
+    if (isNetworkAvailable()) {
+      try {
+        json = new JSONObject(postdata);
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+    } else {
+      message = "Cannot connect to Internet...Please check your connection!";
+      showProgress(message, context);
+      typeError = 1;
+    }
+    RequestQueue queue = Volley.newRequestQueue(context);
+    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(POST, url, json,
+            new Response.Listener<JSONObject>() {
+              @Override
+              public void onResponse(JSONObject response) {
+                requestHandler.requestCompleted(response, reqId);
+
+                Log.e("RequestURL:::",request_url);
+                Log.e("Postdata:::",json.toString());
+                Log.e("Response:::",response.toString());
+                setLogsFiles(request_url, json, response);
+              }
+            }, new Response.ErrorListener() {
+      @Override
+      public void onErrorResponse(VolleyError error) {
+        if (error instanceof NetworkError) {
+
+          message = "Cannot connect to Internet...Please check your connection!";
+          showProgress(message, context);
+          typeError = 1;
+        } else if (error instanceof ServerError) {
+          typeError = 2;
+          message = "The server could not be found. Please try again after some time!!";
+          showProgress(message, context);
+        } else if (error instanceof AuthFailureError) {
+          typeError = 3;
+          message = "Cannot connect to Internet...Please check your connection!";
+          showProgress(message, context);
+        } else if (error instanceof ParseError) {
+          typeError = 4;
+          message = "No Data Found";
+          showProgress(message, context);
+        } else if (error instanceof NoConnectionError) {
+          typeError = 5;
+          message = "Cannot connect to Internet...Please check your connection!";
+          showProgress(message, context);
+        } else if (error instanceof TimeoutError) {
+          typeError = 6;
+          message = "TimeOut! Please check your internet connection.";
+          showProgress(message, context);
         }
-        RequestQueue queue = Volley.newRequestQueue(context);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(POST, url, json,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        requestHandler.requestCompleted(response, reqId);
+        requestHandler.requestEndedWithError(message, typeError);
+      }
 
-                        Log.e("RequestURL:::",request_url);
-                        Log.e("Postdata:::",json.toString());
-                        Log.e("Response:::",response.toString());
-                        setLogsFiles(request_url, json, response);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                if (error instanceof NetworkError) {
+    }) {
 
-                    message = "Cannot connect to Internet...Please check your connection!";
-                    showProgress(message, context);
-                    typeError = 1;
-                } else if (error instanceof ServerError) {
-                    typeError = 2;
-                    message = "The server could not be found. Please try again after some time!!";
-                    showProgress(message, context);
-                } else if (error instanceof AuthFailureError) {
-                    typeError = 3;
-                    message = "Cannot connect to Internet...Please check your connection!";
-                    showProgress(message, context);
-                } else if (error instanceof ParseError) {
-                    typeError = 4;
-                    message = "No Data Found";
-                    showProgress(message, context);
-                } else if (error instanceof NoConnectionError) {
-                    typeError = 5;
-                    message = "Cannot connect to Internet...Please check your connection!";
-                    showProgress(message, context);
-                } else if (error instanceof TimeoutError) {
-                    typeError = 6;
-                    message = "TimeOut! Please check your internet connection.";
-                    showProgress(message, context);
-                }
-                requestHandler.requestEndedWithError(message, typeError);
-            }
-
-        }) {
-
-            /** Passing some request headers* */
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap();
-                headers.put("Content-Type", "application/json");
-                return headers;
-            }
+      /** Passing some request headers* */
+      @Override
+      public Map<String, String> getHeaders() throws AuthFailureError {
+        HashMap<String, String> headers = new HashMap();
+        headers.put("Content-Type", "application/json");
+        return headers;
+      }
 
 //            @Override
 //            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
@@ -179,85 +181,85 @@ public class MethodResquest implements MethodHandler {
 //            protected VolleyError parseNetworkError(VolleyError volleyError) {
 //                return super.parseNetworkError(volleyError);
 //            }
-        };
+    };
 
 
-        queue.add(jsonObjectRequest);
-    }
+    queue.add(jsonObjectRequest);
+  }
 
-    public static void showProgress(String title, final Context context) {
+  public static void showProgress(String title, final Context context) {
 
-    }
+  }
 
-    public static void dismissProgress(Context context) {
-        if (dialog != null && dialog.isShowing())
-            dialog.dismiss();
-        dialog = null;
+  public static void dismissProgress(Context context) {
+    if (dialog != null && dialog.isShowing())
+      dialog.dismiss();
+    dialog = null;
 
-    }
+  }
 
-    private boolean isNetworkAvailable() {
+  private boolean isNetworkAvailable() {
 
-        ConnectivityManager manager = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
+    ConnectivityManager manager = (ConnectivityManager) context
+            .getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        if (manager == null) {
+    if (manager == null) {
 
-            return false;
-
-        }
-
-        NetworkInfo net = manager.getActiveNetworkInfo();
-
-        if (net != null) {
-
-            networkType = net.getTypeName();
-
-            return net.isConnected();
-
-        }
-
-        return false;
+      return false;
 
     }
 
-    private void setLogsFiles(String request, JSONObject postdata, JSONObject response) {
+    NetworkInfo net = manager.getActiveNetworkInfo();
 
-        try {
+    if (net != null) {
 
-            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(context.getExternalFilesDir(null).getAbsolutePath() + "/getLucky.log", true)));
-            pw.append(getCustomSystemTime());
+      networkType = net.getTypeName();
 
-            pw.append("Reqest URL:");
-            pw.append(request);
-
-            pw.append("\n");
-
-            pw.append("Req Body:");
-            pw.append(postdata.toString());
-
-            pw.append("\n");
-
-            pw.append("Response:");
-            pw.append(response.toString());
-
-            pw.append("\n");
-
-            pw.append("------------------------------\n");
-
-            pw.flush();
-
-            pw.close();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+      return net.isConnected();
 
     }
 
-    private static String getCustomSystemTime() {
-        DateFormat dateFormat = new SimpleDateFormat("dd:MMM:yyy hh:mm:ss", Locale.ENGLISH);
-        java.util.Date date = new java.util.Date();
-        return "-----" + dateFormat.format(date) + "-----\n";
+    return false;
+
+  }
+
+  private void setLogsFiles(String request, JSONObject postdata, JSONObject response) {
+
+    try {
+
+      PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(context.getExternalFilesDir(null).getAbsolutePath() + "/getLucky.log", true)));
+      pw.append(getCustomSystemTime());
+
+      pw.append("Reqest URL:");
+      pw.append(request);
+
+      pw.append("\n");
+
+      pw.append("Req Body:");
+      pw.append(postdata.toString());
+
+      pw.append("\n");
+
+      pw.append("Response:");
+      pw.append(response.toString());
+
+      pw.append("\n");
+
+      pw.append("------------------------------\n");
+
+      pw.flush();
+
+      pw.close();
+
+    } catch (Exception ex) {
+      ex.printStackTrace();
     }
+
+  }
+
+  private static String getCustomSystemTime() {
+    DateFormat dateFormat = new SimpleDateFormat("dd:MMM:yyy hh:mm:ss", Locale.ENGLISH);
+    java.util.Date date = new java.util.Date();
+    return "-----" + dateFormat.format(date) + "-----\n";
+  }
 }

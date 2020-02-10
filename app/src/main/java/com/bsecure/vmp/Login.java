@@ -18,110 +18,110 @@ import org.json.JSONObject;
 
 public class Login extends AppCompatActivity implements RequestHandler{
 
-    private EditText phoneno;
+  private EditText phoneno;
 
-    private Button send;
+  private Button send;
 
-    private String phone;
+  private String phone;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_login);
 
-        phoneno = findViewById(R.id.phoneno);
+    phoneno = findViewById(R.id.phoneno);
 
-        send = findViewById(R.id.send);
+    send = findViewById(R.id.send);
 
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    send.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
 
-                phone = phoneno.getText().toString().trim();
+        phone = phoneno.getText().toString().trim();
 
-                if(TextUtils.isEmpty(phone))
-                {
-                    Toast.makeText(Login.this, "Please Enter Phone Number", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if(phone.length() < 10)
-                {
-                    Toast.makeText(Login.this, "Phone Number Should be 10 Digits", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                getLogin(phone);
-                // startActivity(new Intent(Login.this,OtpScreen.class));
-            }
-        });
-    }
-
-    private void getLogin(String phone) {
-
-        try {
-
-            JSONObject object=new JSONObject();
-
-            object.put("mobile_number", phone);
-
-            new MethodResquest(this,  this, Constants.send_otp, object.toString(),100);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
+        if(TextUtils.isEmpty(phone))
+        {
+          Toast.makeText(Login.this, "Please Enter Phone Number", Toast.LENGTH_SHORT).show();
+          return;
         }
 
-    }
-
-
-    @Override
-    public void requestStarted() {
-
-    }
-
-    @Override
-    public void requestCompleted(JSONObject response, int requestType) {
-
-        try {
-
-            switch (requestType) {
-
-                case 100:
-
-                    JSONObject result = new JSONObject(response.toString());
-
-                    if(result.optString("statuscode").equalsIgnoreCase("200"))
-                    {
-                        Toast.makeText(this, result.optString("statusdescription"), Toast.LENGTH_SHORT).show();
-
-                        Intent in = new Intent(Login.this, VerifyOtp.class);
-
-                        in.putExtra("phone", phone);
-
-                        startActivity(in);
-                    }
-                    else
-                    {
-                        Toast.makeText(this, result.optString("statusdescription"), Toast.LENGTH_SHORT).show();
-                    }
-
-                    break;
-
-                default:
-
-                    break;
-            }
-        }catch (Exception e){
-
-            e.printStackTrace();
-
+        if(phone.length() < 10)
+        {
+          Toast.makeText(Login.this, "Phone Number Should be 10 Digits", Toast.LENGTH_SHORT).show();
+          return;
         }
+        getLogin(phone);
+        // startActivity(new Intent(Login.this,OtpScreen.class));
+      }
+    });
+  }
+
+  private void getLogin(String phone) {
+
+    try {
+
+      JSONObject object=new JSONObject();
+
+      object.put("mobile_number", phone);
+
+      new MethodResquest(this,  this, Constants.send_otp, object.toString(),100);
+
+    } catch (Exception e) {
+
+      e.printStackTrace();
 
     }
 
-    @Override
-    public void requestEndedWithError(String error, int errorcode) {
+  }
+
+
+  @Override
+  public void requestStarted() {
+
+  }
+
+  @Override
+  public void requestCompleted(JSONObject response, int requestType) {
+
+    try {
+
+      switch (requestType) {
+
+        case 100:
+
+          JSONObject result = new JSONObject(response.toString());
+
+          if(result.optString("statuscode").equalsIgnoreCase("200"))
+          {
+            Toast.makeText(this, result.optString("statusdescription"), Toast.LENGTH_SHORT).show();
+
+            Intent in = new Intent(Login.this, VerifyOtp.class);
+
+            in.putExtra("phone", phone);
+
+            startActivity(in);
+          }
+          else
+          {
+            Toast.makeText(this, result.optString("statusdescription"), Toast.LENGTH_SHORT).show();
+          }
+
+          break;
+
+        default:
+
+          break;
+      }
+    }catch (Exception e){
+
+      e.printStackTrace();
 
     }
+
+  }
+
+  @Override
+  public void requestEndedWithError(String error, int errorcode) {
+
+  }
 }
